@@ -27,7 +27,7 @@ The collection executes the following pipeline automatically:
 Here is the execution report showing a 100% success rate across all 18 automated checkpoints:
 
 ### Part 1: Adding the Pet & Uploading Media
-![Postman Test Results Part 1](`Results_Part1.png`)
+![Results_Part1.png]
 
 ### Part 2: Verifying Data Stability & Deletion
-![Postman Test Results Part 2](`Results_Part2.png`)
+![Results_Part2.png]
