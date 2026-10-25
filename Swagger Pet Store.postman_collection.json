@@ -1,0 +1,206 @@
+{
+  "info": {
+    "_postman_id": "282ec0ca-aa27-43be-a73f-1a41cc1f8837",
+    "name": "Swagger Pet Store",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58907910",
+    "_collection_link": "https://go.postman.co/collection/58907910-282ec0ca-aa27-43be-a73f-1a41cc1f8837?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Add_New_Pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status check\", function(){\n    pm.response.to.have.status(200);\n});\n\nconst jsonbody = pm.response.json();\n\npm.test(\"Response fields check\", function(){\n    pm.expect(jsonbody).to.have.property(\"id\");\n    pm.expect(jsonbody).to.have.property(\"category\");\n    pm.expect(jsonbody.category).to.have.property(\"id\");\n    pm.expect(jsonbody.category).to.have.property(\"name\");\n    pm.expect(jsonbody).to.have.property(\"name\");\n    pm.expect(jsonbody).to.have.property(\"photoUrls\");\n    pm.expect(jsonbody).to.have.property(\"tags\");\n    pm.expect(jsonbody.tags).to.be.an('array');\n    pm.expect(jsonbody.tags[0]).to.have.property(\"id\");\n    pm.expect(jsonbody.tags[0]).to.have.property(\"name\");\n    pm.expect(jsonbody).to.have.property(\"status\");\n});\n\npm.test(\"Response fields type check\", function(){\n    pm.expect(jsonbody.id).to.be.a('number');\n    pm.expect(jsonbody.category.id).to.be.a('number');\n    pm.expect(jsonbody.category.name).to.be.a('string');\n    pm.expect(jsonbody.name).to.be.a('string');\n    pm.expect(jsonbody.photoUrls).to.be.an('array');\n    pm.expect(jsonbody.photoUrls[0]).to.be.a('string');\n    pm.expect(jsonbody.tags).to.be.an('array');\n    pm.expect(jsonbody.tags[0].id).to.be.a('number');\n    pm.expect(jsonbody.tags[0].name).to.be.a('string');\n    pm.expect(jsonbody.status).to.be.a('string');\n});\n\npm.test(\"Response fields value check\", function(){\n    const rawdatajson = JSON.parse(pm.request.body.raw);\n    console.log(rawdatajson.id);\n    pm.expect(jsonbody.name).to.eql(rawdatajson.name);\n    pm.expect(jsonbody.photoUrls[0]).to.eql(rawdatajson.photoUrls[0]);\n    pm.expect(jsonbody.category.name).to.eql(rawdatajson.category.name);\n    pm.expect(jsonbody.category.id).to.eql(rawdatajson.category.id);\n    pm.expect(jsonbody.tags[0].id).to.eql(rawdatajson.tags[0].id);\n    pm.expect(jsonbody.tags[0].name).to.eql(rawdatajson.tags[0].name);\n    pm.expect(jsonbody.status).to.eql(rawdatajson.status);\n});\n\npm.test(\"response time\", function(){\n    pm.expect(pm.response.responseTime).to.be.lessThan(5000);\n})\n\npm.collectionVariables.set(\"MyNewPetDetails\", JSON.stringify(jsonbody));"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {
+          "accept": true
+        }
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"id\": {{petId}},\r\n    \"category\": {\r\n        \"id\": {{petId}},\r\n        \"name\": \"{{petName}}\"\r\n    },\r\n    \"name\": \"{{petName}}\",\r\n    \"photoUrls\": [\r\n        \"https://doogiepic.png\"\r\n    ],\r\n    \"tags\": [\r\n        {\r\n            \"id\": {{petId}},\r\n            \"name\": \"{{petName}}\"\r\n        }\r\n    ],\r\n    \"status\": \"available\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseurl}}/pet",
+          "host": [
+            "{{baseurl}}"
+          ],
+          "path": [
+            "pet"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload_Image",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status check\", function(){\n    pm.response.to.have.status(200);\n})\nconst jsonbody = pm.response.json();\n\npm.test(\"Check response body fields\", function(){\n    pm.expect(jsonbody).to.have.property('code');\n    pm.expect(jsonbody).to.have.property('type');\n    pm.expect(jsonbody).to.have.property('message');\n});\n\npm.test(\"Check response body fields type\", function(){\n    pm.expect(jsonbody.code).to.be.a('number');\n    pm.expect(jsonbody.type).to.be.a('string');\n    pm.expect(jsonbody.message).to.be.a('string');\n});\n\npm.test(\"Body check\", function(){\n    pm.expect(jsonbody.code).to.eql(200);\n    pm.expect(jsonbody.type).to.eql(\"unknown\");\n    //pm.expect(jsonbody.message).to.include(\"additionalMetadata: Petter\");\n    const addiMetadata = pm.request.body.formdata.find(a => a.key == \"additionalMetadata\");\n    console.log(addiMetadata);\n    if(addiMetadata.key){\n        pm.expect(jsonbody.message).to.includes(addiMetadata.key, addiMetadata.value); \n    }\n    pm.expect(jsonbody.message).to.include(\"File uploaded\");\n    \n    const filebody = pm.request.body.formdata.find(a => a.key == \"file\");\n    if (filebody && filebody.src) {\n        const filename = filebody.src.split(\"/\").pop().split(\"\\\\\").pop();\n        pm.expect(jsonbody.message).to.include(filename);\n    }\n})\n\npm.test(\"Response time check\", function () {\n    pm.expect(pm.response.responseTime).to.be.lessThan(10000);\n});\npm.test(\"Header check\", function () { \n    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");\n});\n"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {
+          "accept": true
+        }
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/C:/Users/DELL/OneDrive/Pictures/LOGO_1.png"
+              ]
+            },
+            {
+              "key": "additionalMetadata",
+              "value": "{{petName}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseurl}}/pet/{{petId}}/uploadImage",
+          "host": [
+            "{{baseurl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}",
+            "uploadImage"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Find_pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code === 200){\r\n    pm.test(\"Status code is 200\", function () {\r\n        pm.response.to.have.status(200);\r\n    });\r\n\r\n    pm.test(\"Check Response\", function(){\r\n        const response = pm.response.json();   \r\n        const expectedresponse = JSON.parse(pm.collectionVariables.get(\"MyNewPetDetails\"));\r\n        pm.expect(response).to.deep.eql(expectedresponse);\r\n    });\r\n}\r\nelse{\r\n    pm.test(\"Status code is 404\", function () {\r\n        pm.response.to.have.status(404);\r\n        pm.expect(pm.response.json().code).to.eql(1);\r\n        pm.expect(pm.response.json().type).to.eql(\"error\");\r\n        pm.expect(pm.response.json().message).to.eql(\"Pet not found\");\r\n    });\r\n    pm.execution.setNextRequest(null);\r\n}\r\nconst schema = {\r\n                    \"id\": Number,\r\n                    \"category\": {\r\n                        \"id\": Number,\r\n                        \"name\": \"string\"\r\n                    },\r\n                    \"name\": \"string\",\r\n                    \"photoUrls\": [\r\n                        \"string\"\r\n                    ],\r\n                    \"tags\": [\r\n                        {\r\n                            \"id\": Number,\r\n                            \"name\": \"string\"\r\n                        }\r\n                    ],\r\n                    \"status\": \"string\"\r\n                };\r\npm.test(\"Schema validation\", function(){\r\n pm.response.to.have.jsonSchema(schema);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseurl}}/pet/{{petId}}",
+          "host": [
+            "{{baseurl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete_pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response time is less than 200ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(400);\r\n});\r\nconst jsonbody=pm.response.json();\r\npm.test(\"Response body contains correct message\", function () {\r\n    pm.expect(jsonbody.code).to.eql(200);\r\n    pm.expect(jsonbody.type).to.eql(\"unknown\");\r\n    pm.expect(jsonbody.message).to.include(pm.collectionVariables.get(\"petId\"));\r\n});\r\n\r\npm.test(\"Check if the pet is deleted by searching for pet\", function () {\r\n    pm.execution.setNextRequest(\"Find_Pet\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseurl}}/pet/{{petId}}",
+          "host": [
+            "{{baseurl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "petId",
+      "value": ""
+    },
+    {
+      "key": "petName",
+      "value": ""
+    },
+    {
+      "key": "MyNewPetDetails",
+      "value": ""
+    }
+  ]
+}
